@@ -1,11 +1,9 @@
 package template;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
-import jws.dal.annotation.Column;
-import jws.dal.annotation.GeneratedValue;
-import jws.dal.annotation.GenerationType;
-import jws.dal.common.DbType;
 import database.ColumnInfo;
 import database.TableInfo;
 
@@ -147,5 +145,10 @@ public class DDLTemplateImp extends TemplateAbstract{
 		return sb.toString();
 	}
 	
-	 
+	@Override
+	public Map<String, String> context() { 
+		Map<String, String> map = new HashMap<String,String>();
+		map.put("DDLClassName", nameJavaClass());
+		return map;
+	}  
 }

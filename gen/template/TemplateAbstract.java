@@ -3,6 +3,7 @@ package template;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import write.OutPut;
 import database.TableInfo;
@@ -11,11 +12,33 @@ public abstract class TemplateAbstract {
 	protected TableInfo tableInfo;
 	protected String path;
 	
-	
+	/**
+	 * 马农
+	 * @return
+	 * @throws Exception
+	 */
 	protected abstract String coding()throws Exception ;
+	/**
+	 * 马路
+	 * @return
+	 */
 	protected abstract String path();
+	/**
+	 * 马名
+	 * @return
+	 */
 	protected abstract String nameJavaFile();
+	/**
+	 * 马类
+	 * @return
+	 */
 	protected abstract String nameJavaClass();
+	
+	/**
+	 * 上下文
+	 * @return
+	 */
+	public abstract Map<String,String> context();
 	
 	/**
 	 * 外部接口
@@ -25,7 +48,7 @@ public abstract class TemplateAbstract {
 		OutPut.createDir(path());
 		String code = coding();
 		String javaFileName = nameJavaFile();
-		OutPut.writeJavaFile(path, javaFileName, code);
+		OutPut.writeJavaFile(path(), javaFileName, code);
 		return code;
 	} 
 	
@@ -52,8 +75,8 @@ public abstract class TemplateAbstract {
 		String current = System.getProperty("user.dir");
 		current = current.replaceAll("\\\\", ".");
 		String packPrefix = current+".app.";
-		path = path.replaceAll("\\\\", ".");
-		return path.replaceAll(packPrefix, "");
+		String thePath = path.replaceAll("\\\\", ".");
+		return thePath.replaceAll(packPrefix, "");
 	} 
 	/**
 	 * 代码创建时间

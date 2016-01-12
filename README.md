@@ -2,7 +2,7 @@
 uc框架-Jws-代码生成器
 # 1、下载gen代码；
 # 2、将gen复制到你的jws workspace中；
-# 3、设置gen目录为src；
+# 3、设置gen目录为link source；
 # 4、找到gen下的gen.java代码；
 # 5、很容易懂啦，通过代码硬配置下数据库信息，指定需要生成的表名及指定代码生成的路径；
 # 6、执行main就可以啦；

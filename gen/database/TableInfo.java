@@ -42,6 +42,24 @@ public class TableInfo {
 	public void setTableDesc(String tableDesc) {
 		this.tableDesc = tableDesc;
 	}
+	
+	public ColumnInfo getColumn(String name){
+		for(ColumnInfo ci : columnInfos){
+			if(ci.getColumnName().equals(name)){
+				return ci;
+			}
+		}
+		return null;
+	}
+	
+	public ColumnInfo getPKColumn(){
+		for(ColumnInfo ci : columnInfos){
+			 if(ci.isPk()){
+				 return ci;
+			 }
+		}
+		return null;
+	}
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		sb.append("[tableCat->").append(tableCat).append("][tabelName->").append(tableName).append("][tableSchem->").append(tableSchem).append("]");

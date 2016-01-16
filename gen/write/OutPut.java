@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import Log.Log;
+import log.Log;
 
 public class OutPut {
 

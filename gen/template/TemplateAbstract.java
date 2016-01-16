@@ -1,18 +1,36 @@
 package template;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
+import context.Context;
+import context.ContextKey;
 import write.OutPut;
+import xml.Xml;
 import database.TableInfo;
 
 public abstract class TemplateAbstract {
 	protected TableInfo tableInfo;
 	protected String path;
+	protected String workspace;
+	protected Map<String,String[]> queryGroup = new HashMap<String,String[]>();
 	
-	/**
+	public TemplateAbstract(TableInfo _tableInfo,String _path,String _workspace,Map<String,String[]> _queryGroup){
+		tableInfo = _tableInfo;
+		path = _path;
+		workspace = _workspace;
+		if( null != _queryGroup){
+			queryGroup = _queryGroup;
+		}
+		initContext();
+	} 
+ 	/**
 	 * 马农
 	 * @return
 	 * @throws Exception
@@ -33,13 +51,7 @@ public abstract class TemplateAbstract {
 	 * @return
 	 */
 	protected abstract String nameJavaClass();
-	
-	/**
-	 * 上下文
-	 * @return
-	 */
-	public abstract Map<String,String> context();
-	
+	 
 	/**
 	 * 外部接口
 	 * @throws Exception 
@@ -49,6 +61,7 @@ public abstract class TemplateAbstract {
 		String code = coding();
 		String javaFileName = nameJavaFile();
 		OutPut.writeJavaFile(path(), javaFileName, code);
+		Xml.configDDLConfig();
 		return code;
 	} 
 	
@@ -61,9 +74,7 @@ public abstract class TemplateAbstract {
 		String tableName = tableInfo.getTableName();
 		String[] splitNames = tableName.split("_");
 		for(String split : splitNames){
-			String uperFirst = String.valueOf(split.charAt(0)).toUpperCase();
-			String left = split.substring(1);
-			className.append(uperFirst).append(left);
+			className.append(firstLetterUp(split));
 		}
 		return className.toString();
 	}
@@ -72,7 +83,11 @@ public abstract class TemplateAbstract {
 	 * @return
 	 */
 	protected String packaging(){
-		String current = System.getProperty("user.dir");
+		String current = workspace;
+		if( StringUtils.isEmpty(workspace) ){
+			workspace = System.getProperty("user.dir");
+		}
+		
 		current = current.replaceAll("\\\\", ".");
 		String packPrefix = current+".app.";
 		String thePath = path.replaceAll("\\\\", ".");
@@ -97,10 +112,8 @@ public abstract class TemplateAbstract {
 		for(int i=0;i<splitNames.length;i++){
 			if(i==0){
 				varName.append(splitNames[i]);
-			}else{
-				String uperFirst = String.valueOf(splitNames[i].charAt(0)).toUpperCase();
-				String left = splitNames[i].substring(1);
-				varName.append(uperFirst).append(left);
+			}else{ 
+				varName.append(firstLetterUp(splitNames[i]));
 			}
 		} 
 		return varName.toString();
@@ -115,9 +128,7 @@ public abstract class TemplateAbstract {
 		StringBuffer methodName = new StringBuffer();
 		String[] splitNames = column.split("_");
 		for(int i=0;i<splitNames.length;i++){
-			String uperFirst = String.valueOf(splitNames[i].charAt(0)).toUpperCase();
-			String left = splitNames[i].substring(1);
-			methodName.append(uperFirst).append(left);
+			methodName.append(firstLetterUp(splitNames[i]));
 		} 
 		return "set"+methodName.toString();
 	}
@@ -129,11 +140,24 @@ public abstract class TemplateAbstract {
 	protected String getterMethodNaming(String column){
 		StringBuffer methodName = new StringBuffer();
 		String[] splitNames = column.split("_");
-		for(int i=0;i<splitNames.length;i++){
-			String uperFirst = String.valueOf(splitNames[i].charAt(0)).toUpperCase();
-			String left = splitNames[i].substring(1);
-			methodName.append(uperFirst).append(left);
+		for(int i=0;i<splitNames.length;i++){ 
+			methodName.append(firstLetterUp(splitNames[i]));
 		} 
 		return "get"+methodName.toString();
+	} 
+	
+	protected String firstLetterUp(String str){
+		if(StringUtils.isEmpty(str)){return "";}
+		return String.valueOf(str.charAt(0)).toUpperCase()+str.substring(1);
 	}
+	
+	private void initContext(){ 
+		if( StringUtils.isEmpty(workspace) ){
+			workspace = System.getProperty("user.dir");
+		}
+		Context.set(ContextKey.XML_CLASSES_PATH, workspace+File.separator+"conf"+File.separator+"biz"+File.separator+"database"+File.separator+"classes.xml");
+		Context.set(ContextKey.XML_CLUSTER_DB_PATH, workspace+File.separator+"conf"+File.separator+"biz"+File.separator+"database"+File.separator+"cluster-configs.xml");
+		Context.set(ContextKey.XML_CLUSTER_CACHE_PATH, workspace+File.separator+"conf"+File.separator+"biz"+File.separator+"cache"+File.separator+"cluster-configs.xml");
+		Context.set(ContextKey.XML_CACHE_PATH, workspace+File.separator+"conf"+File.separator+"biz"+File.separator+"cache"+File.separator+"caches.xml");
+	} 
 }

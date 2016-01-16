@@ -9,6 +9,8 @@ public class ColumnInfo {
 	private String remarks;
 	private boolean isPk;
 	private boolean isAutoIncr;
+	private String jwsDbType;
+	private String javaType;
 	
 	public String getColumnName() {
 		return columnName;
@@ -41,6 +43,18 @@ public class ColumnInfo {
 		this.remarks = remarks;
 	} 
 	
+	public String getJwsDbType() {
+		return jwsDbType;
+	}
+	public void setJwsDbType(String jwsDbType) {
+		this.jwsDbType = jwsDbType;
+	}
+	public String getJavaType() {
+		return javaType==null?"Object":javaType;
+	}
+	public void setJavaType(String javaType) {
+		this.javaType = javaType;
+	}
 	public String toString(){
 		return "[columnName->"+columnName+"][type->"+type+"][isPk->"+isPk+"][isAutoIncr->"+isAutoIncr+"][remarks->"+remarks+"]\n";
 	}

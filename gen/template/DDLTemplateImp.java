@@ -1,17 +1,17 @@
 package template;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
+import context.Context;
+import context.ContextKey;
 import database.ColumnInfo;
 import database.TableInfo;
 
 public class DDLTemplateImp extends TemplateAbstract{
 	
-	public DDLTemplateImp(TableInfo _tableInfo,String _path){
-		tableInfo = _tableInfo;
-		path = _path;
+	public DDLTemplateImp(TableInfo _tableInfo,String _path,String _workspace){
+		super(_tableInfo,_path,_workspace,null); 
+		Context.set(ContextKey.DDL_CLASSES_COMMENT,_tableInfo.getTableDesc());
 	} 
 	@Override
 	protected String nameJavaFile() { 
@@ -25,13 +25,21 @@ public class DDLTemplateImp extends TemplateAbstract{
 
 	@Override
 	protected String nameJavaClass() {
-		return naming()+"DDL";
+		String name = naming()+"DDL";
+		Context.set(ContextKey.DDL_CLASS_NAME, name);
+		return name;
 	} 
+	
+	private String packingName(){
+		String pName = packaging()+".ddl";
+		Context.set(ContextKey.DDL_PACKAGE_NAME,pName);
+		return pName;
+	}
 	
 	@Override
 	protected String coding() throws Exception { 
 		StringBuffer sb = new StringBuffer();
-		sb.append("package ").append(packaging()).append(".ddl").append(";\n\n");
+		sb.append("package ").append(packingName()).append(";\n\n");
 		//import
 		sb.append("import jws.dal.annotation.Column;").append("\n");
 		sb.append("import jws.dal.annotation.GeneratedValue;").append("\n");
@@ -61,62 +69,9 @@ public class DDLTemplateImp extends TemplateAbstract{
 				sb.append("\t@GeneratedValue(generationType= GenerationType.Auto)").append("\n");
 			}
 			String varName = varNaming(column.getColumnName());
-			String dbType=null;
-			String javaType="Object";
+			String dbType=column.getJwsDbType();
+			String javaType=column.getJavaType(); 
 			
-			switch(column.getType()){
-				case java.sql.Types.BIT:
-				case java.sql.Types.TINYINT:
-				case java.sql.Types.SMALLINT:
-				case java.sql.Types.INTEGER:
-					dbType = "DbType.Int";
-					javaType = "Integer";
-					break;
-					
-				case java.sql.Types.BIGINT:
-					dbType = "DbType.BigInt";
-					javaType = "Long";
-					break;
-					
-				case java.sql.Types.FLOAT:
-					dbType = "DbType.Float";
-					javaType = "Float";
-					break;
-					
-				case java.sql.Types.NUMERIC:
-				case java.sql.Types.DECIMAL:
-				case java.sql.Types.DOUBLE:
-					dbType = "DbType.Double";
-					javaType = "Double";
-					break;
-					
-				case java.sql.Types.CHAR:
-					dbType = "DbType.Char";
-					javaType = "Char";
-					break;
-					
-				case java.sql.Types.VARCHAR:
-				case java.sql.Types.LONGVARCHAR:
-					dbType = "DbType.Varchar";
-					javaType = "String";
-					break;
-					
-				case java.sql.Types.DATE:
-				case java.sql.Types.TIME:
-				case java.sql.Types.TIMESTAMP:
-					dbType = "DbType.DateTime";
-					javaType = "Long";
-					break;
-					
-				case java.sql.Types.BLOB:
-					dbType = "DbType.Blob";
-					javaType = "java.sql.Blob";
-					break;
-					
-			/*	default:
-					dbType = "DbType.Blob";
-					javaType = "Object";*/
-			}
 			//var
 			sb.append("\t@Column(name=\"").append(column.getColumnName()).append("\", type=").append(dbType).append(")").append("\n");
 			sb.append("\tprivate ").append(javaType).append(" ").append(varName).append(";\n");
@@ -144,11 +99,4 @@ public class DDLTemplateImp extends TemplateAbstract{
 		sb.append("}\n");
 		return sb.toString();
 	}
-	
-	@Override
-	public Map<String, String> context() { 
-		Map<String, String> map = new HashMap<String,String>();
-		map.put("DDLClassName", nameJavaClass());
-		return map;
-	}  
 }

@@ -1,5 +1,7 @@
 # jws-gen
-uc框架-Jws-代码生成器
+#####uc框架-Jws-代码生成器
+##概述
+######通过表结构生成简易的CURD代码，支持listCache，rowcache；
 ##使用说明
 #####1、下载gen代码；
 #####2、将gen复制到你的jws workspace中；

@@ -26,6 +26,7 @@ public class DaoTemplateImp extends TemplateAbstract {
 		StringBuffer sb = new StringBuffer();
 		sb.append("package ").append(packingName()).append(";\n\n");
 		//import
+		sb.append("import java.util.ArrayList;").append("\n");
 		sb.append("import java.util.List;").append("\n");
 		sb.append("import jws.dal.Dal;").append("\n");
 		sb.append("import jws.dal.sqlbuilder.Shard;").append("\n");
@@ -76,7 +77,11 @@ public class DaoTemplateImp extends TemplateAbstract {
  		sb.append("\t\treturn Dal.rowcacheSelect(").append(ddlClassName).append(".class,id);\n");
  		sb.append("\t}\n");
  		
- 		String pkName = tableInfo.getPKColumn()==null?"id": tableInfo.getPKColumn().getColumnName();
+ 		if(tableInfo.getPKColumn()==null){
+ 			throw new Exception("不存在主键，请设置主键");
+ 		}
+ 		String pkName =  tableInfo.getPKColumn().getColumnName();
+ 		String pkType = tableInfo.getPKColumn().getJavaType();
  		String varDDL = "ddl";
  		
  		StringBuffer listCacheReflash = new StringBuffer();
@@ -118,7 +123,14 @@ public class DaoTemplateImp extends TemplateAbstract {
  			listQuery.append(listMethod).append("(").append(params).append("int offset,int count,Shard shard){\n");
  			listQuery.append("\t\t").append(ddlClassName).append(" ").append(varDDL).append( "  = new ").append(ddlClassName).append("();\n");
  			listQuery.append(setterBody);
- 			listQuery.append("\t\treturn Dal.listcacheSelect(\"").append(listMethod).append("\",").append(varDDL).append(",offset,count,shard);\n");
+ 			listQuery.append("\t\tList<").append(ddlClassName).append("> idList = Dal.listcacheSelect(").append("\"").append(listMethod).append("\",").append(varDDL).append(",offset,count,shard);\n");
+ 			listQuery.append("\t\tList<").append(pkType).append("> ids = new ArrayList<").append(pkType).append(">();\n");
+ 			listQuery.append("\t\tif(idList!=null && idList.size()>0){\n");
+ 			listQuery.append("\t\t\tfor(").append(ddlClassName).append(" o:idList){\n");
+ 			listQuery.append("\t\t\t\tids.add(o.").append(getterMethodNaming(pkName)).append("());\n");
+ 			listQuery.append("\t\t\t}\n");
+ 			listQuery.append("\t\t}\n");
+ 			listQuery.append("\t\treturn Dal.rowcacheSelectMulti(").append(ddlClassName).append(".class,ids);\n");
  			listQuery.append("\t}\n");
  			
  			//countMethod

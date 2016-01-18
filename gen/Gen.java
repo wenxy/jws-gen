@@ -9,7 +9,16 @@ import template.TemplateAbstract;
 import database.DBInfo;
 import database.TableInfo;
 
-
+/**
+ *  JAVA代码部分，包含DDL，Dao，Service部分
+ *  
+ *  JWS配置部分，包含biz/cache及biz/database
+ * memcache默认为client0
+ * database默认为dbbase
+ * 需要修改，请在代码生成之后调整
+ * @author Administrator
+ *
+ */
 public class Gen {
 
 
@@ -34,6 +43,7 @@ public class Gen {
 			TableInfo tableInfo = dbInfo.tableInfo(Config.tableName);
 			TemplateAbstract ddl = new DDLTemplateImp(tableInfo,Config.path,Config.workspace);
 			ddl.template(); 
+			
 			//生成DAO，需要根据查询字段生成list方法时，指定by条件；用map分组多个list方法
 			Map<String,String[]> qg = new HashMap<String,String[]>();
 			qg.put("1", new String[]{"game_id","app_id"});

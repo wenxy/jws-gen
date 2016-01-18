@@ -24,6 +24,14 @@ import org.dom4j.io.XMLWriter;
 import context.Context;
 import context.ContextKey;
 
+/**
+ * JWS配置部分，包含biz/cache及biz/database
+ * memcache默认为client0
+ * database默认为dbbase
+ * 需要修改，请在代码生成之后调整
+ * @author Administrator
+ *
+ */
 public class Xml {
 	
 	/**

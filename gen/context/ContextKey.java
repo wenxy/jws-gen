@@ -11,4 +11,7 @@ public class ContextKey {
 	public static final String DDL_PACKAGE_NAME="DDL_PACKAGE_NAME";
 	public static final String DDL_CLASS_NAME="DDL_CLASS_NAME";
 	public static final String DDL_CLASSES_COMMENT="DDL_CLASSES_COMMENT";
+	
+	public static final String DAO_PACKAGE_NAME="DAO_PACKAGE_NAME";
+	public static final String DAO_CLASS_NAME="DAO_CLASS_NAME";
 }

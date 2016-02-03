@@ -24,13 +24,13 @@ public class Gen {
 
 	final class Config{
 		//生成代码的表名
-		public static final String tableName = "sdk_order";
+		public static final String tableName = "wallet_log";
 		//workspace路径，如果是在相同工程运行，则可以不制定，默认是当前工作目录
 		public static final String workspace="";
 		//代码生成的路径，自动加上ddl，service，dao包名
-		public static final String path = "D:\\gitspace\\warthog-biz\\app\\modules\\order_test";
+		public static final String path = "D:\\workspace\\sdk-server\\app\\moudles\\wallet";
 		//数据源连接信息
-		public static final String url = "jdbc:mysql://192.168.44.129:10002/test_biz_01?user=warthog&password=warthog&useUnicode=true&characterEncoding=8859_1";
+		public static final String url = "jdbc:mysql://192.168.0.56:3306/game_sdk?user=game_sdk&password=game_sdk&useUnicode=true&characterEncoding=utf8";
 		public static final String driver = "com.mysql.jdbc.Driver";
 	}
 	 
@@ -46,10 +46,11 @@ public class Gen {
 			
 			//生成DAO，需要根据查询字段生成list方法时，指定by条件；用map分组多个list方法
 			Map<String,String[]> qg = new HashMap<String,String[]>();
-			qg.put("1", new String[]{"game_id","app_id"});
-			qg.put("2", new String[]{"game_id"});
+			qg.put("1", new String[]{"owner_id","owner_type"}); 
+			qg.put("3", new String[]{"wallet_id"}); 
+			qg.put("2", new String[]{"create_time"}); 
 			TemplateAbstract dao = new DaoTemplateImp(tableInfo,Config.path,Config.workspace,qg);
-			Log.print(dao.template());
+			dao.template();
 			//Log.print(tableInfo.toString());
 			//Log.print(code);
 		}catch(Exception e){

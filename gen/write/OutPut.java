@@ -16,6 +16,7 @@ public class OutPut {
 		}else{
 			file.mkdirs();
 		}
+		Log.print("write to path:"+path);
 	}
 	
 	public static void writeJavaFile(String path,String fileName,String code) throws IOException{

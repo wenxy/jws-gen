@@ -1,18 +1,14 @@
 package xml;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import log.Log;
-
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -23,6 +19,7 @@ import org.dom4j.io.XMLWriter;
 
 import context.Context;
 import context.ContextKey;
+import log.Log;
 
 /**
  * JWS配置部分，包含biz/cache及biz/database
@@ -105,7 +102,26 @@ public class Xml {
 		}
 		writeDocument(document,dbXml);
 		
-		//cache.xml
+		
+		//cache.xml配置
+				
+		document = reader.read(new File(cacheXml));
+		element = find(document, "//config/row-cache/cache/@prefix", className + "_v1");
+		if (null == element) {
+			Element opElm = find(document, "//config/row-cache", null);
+			Map attrs = new HashMap();
+			// attrs.put("name", listName);
+			attrs.put("class", packaging + "." + className);
+			attrs.put("prefix", className + "_v1");
+			attrs.put("enabled", "true");
+			attrs.put("comment", comment);
+			addElement(opElm, "cache", attrs);
+		} else {
+			Log.print("cache.xml->rowCache,row-cache is exisit.prefix=" + className + "_v1");
+		}
+		writeDocument(document, cacheXml);
+		
+		/*//cache.xml
 		document = reader.read( new File(cacheXml)); 
 		element  = find(document,"//caches/row-cache/cache/@class",packaging+"."+className);
 		if( element == null ){
@@ -134,7 +150,7 @@ public class Xml {
 		}else{
 			Log.print("cluster-configs.xml->cache row-cache is exisit,class="+className);
 		}
-		writeDocument(document,cacheClusterXml);
+		writeDocument(document,cacheClusterXml);*/
 		
 	} 
 	 
@@ -160,37 +176,48 @@ public class Xml {
 		//cache.xml配置
 		SAXReader reader = new SAXReader();
 		Document document = reader.read( new File(cacheXml)); 
-		element  = find(document,"//caches/list-cache/cache/@name",listName);
+		/*element  = find(document,"//config/row-cache/cache/@prefix",className+"_v1");
 		if( null == element ){
-			Element opElm =  find(document,"//caches/list-cache",null);
+			Element opElm =  find(document,"//config/row-cache",null);
 			Map attrs = new HashMap();
+			//attrs.put("name", listName);
+			attrs.put("class", packaging+"."+className);
+			attrs.put("prefix", className+"_v1");
+			attrs.put("enabled", "true");
+ 			attrs.put("comment", comment);
+			addElement(opElm,"cache",attrs); 
+		}else{
+			Log.print("cache.xml->rowCache,row-cache is exisit.prefix="+className+"_v1");
+		}
+		writeDocument(document,cacheXml); */
+		
+		element  = find(document,"//config/list-cache/cache/@prefix",listName+"_");
+		if(element == null){
+			Element opElm  = find(document,"//config/list-cache",null);
+			Map attrs = new HashMap(); 
 			attrs.put("name", listName);
 			attrs.put("class", packaging+"."+className);
 			attrs.put("prefix", listName+"_");
 			attrs.put("enabled", "true");
  			attrs.put("comment", comment);
-			addElement(opElm,"cache",attrs); 
-		}else{
-			Log.print("cache.xml->listCache,list-cache is exisit.listName="+listName);
-		}
-		writeDocument(document,cacheXml); 
-		
-		if(true){
-			Element opElm  = find(document,"//caches/list-cache/cache/@name",listName);
-			Map attrs = new HashMap(); 
+			addElement(opElm,"cache",attrs);
+			attrs.clear();
+			opElm  = find(document,"//config/list-cache/cache/@prefix",listName+"_");
 			addElement(opElm,"sql",attrs,sql); 
 			addElement(opElm,"key",attrs,key); 
 			addElement(opElm,"params",attrs,params); 
 			addElement(opElm,"cache-item",attrs,cacheItem);
 			addElement(opElm,"offset",attrs,"0");
 			addElement(opElm,"count",attrs,"100");
+ 		}else{
+			Log.print("cache.xml->listCache,list-cache is exisit.listName="+listName);
 		}
 		writeDocument(document,cacheXml);
 		
 		// cacheClusterXml配置
 		reader = new SAXReader();
 		document = reader.read(new File(cacheClusterXml));
-		element  = find(document,"//configs/config/@prefix",listName+"_v1");
+		element  = find(document,"//configs/config/@prefix",listName+"_");
 		if( element == null ){
 			Element opElm =  find(document,"//configs",null);
 			Map attrs = new HashMap();

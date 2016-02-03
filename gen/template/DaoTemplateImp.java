@@ -91,6 +91,7 @@ public class DaoTemplateImp extends TemplateAbstract {
  		listCacheReflash.append("\tpublic static void listCacheUpdate(").append(ddlClassName).append(" ").append(varDDL).append(",").append("Shard shard){\n");
  		//query method
  		for(String key:queryGroup.keySet()){
+			
  			String[] qKey = queryGroup.get(key);
  			queryCount.append("\tpublic static int ");
  			listQuery.append("\tpublic static List<").append(ddlClassName).append("> ");
@@ -119,11 +120,12 @@ public class DaoTemplateImp extends TemplateAbstract {
  				setterBody.append("\t\t").append(varDDL).append(".").append(setterMethodNaming(qKey[i]));
  				setterBody.append("(").append(varNaming(qKey[i])).append(");\n");
  			}
+ 			String listName = tableInfo.getTableName()+"_"+listMethod;
  			//listMethod
  			listQuery.append(listMethod).append("(").append(params).append("int offset,int count,Shard shard){\n");
  			listQuery.append("\t\t").append(ddlClassName).append(" ").append(varDDL).append( "  = new ").append(ddlClassName).append("();\n");
  			listQuery.append(setterBody);
- 			listQuery.append("\t\tList<").append(ddlClassName).append("> idList = Dal.listcacheSelect(").append("\"").append(listMethod).append("\",").append(varDDL).append(",offset,count,shard);\n");
+ 			listQuery.append("\t\tList<").append(ddlClassName).append("> idList = Dal.listcacheSelect(").append("\"").append(listName).append("\",").append(varDDL).append(",offset,count,shard);\n");
  			listQuery.append("\t\tList<").append(pkType).append("> ids = new ArrayList<").append(pkType).append(">();\n");
  			listQuery.append("\t\tif(idList!=null && idList.size()>0){\n");
  			listQuery.append("\t\t\tfor(").append(ddlClassName).append(" o:idList){\n");
@@ -137,12 +139,12 @@ public class DaoTemplateImp extends TemplateAbstract {
  			queryCount.append(countMethod).append("(").append(params).append("Shard shard){\n");
  			queryCount.append("\t\t").append(ddlClassName).append(" ").append(varDDL).append( "  = new ").append(ddlClassName).append("();\n");
  			queryCount.append(setterBody);
- 			queryCount.append("\t\treturn Dal.listcacheCount(\"").append(listMethod).append("\",").append(varDDL).append(",shard);\n");
+ 			queryCount.append("\t\treturn Dal.listcacheCount(\"").append(listName).append("\",").append(varDDL).append(",shard);\n");
  			queryCount.append("\t}\n");
  			
- 			listCacheReflash.append("\t\tDal.listcacheUpdate(\"").append(listMethod).append("\",").append(varDDL).append(",shard);\n");
+ 			listCacheReflash.append("\t\tDal.listcacheUpdate(\"").append(listName).append("\",").append(varDDL).append(",shard);\n");
  			
- 			Xml.configListCacheConfig(listMethod.toString(), sql.toString(), sqlKey.toString(), sqlKey.toString(), pkName);
+ 			Xml.configListCacheConfig(listName, sql.toString(), sqlKey.toString(), sqlKey.toString(), pkName);
  		}
  		listCacheReflash.append("\t}\n");
  		sb.append(listQuery);
